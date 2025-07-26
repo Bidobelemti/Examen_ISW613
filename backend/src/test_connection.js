@@ -1,13 +1,17 @@
-const { PrismaClient } = require('@prisma/client');
+require('dotenv').config();
 
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  const users = await prisma.user.findMany();
-  console.log(users);
+  const multas = await prisma.multa.findMany();
+  console.log('Usuarios encontrados:', multas);
 }
 
 main()
-  .catch(e => console.error(e))
-  .finally(() => prisma.$disconnect());
-
+  .catch(e => {
+    console.error('Error al conectar con Supabase/Prisma:', e);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
