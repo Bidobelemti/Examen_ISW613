@@ -72,7 +72,8 @@ async function main() {
       codigoEjemplar: 'EJ-1001',
       fechaAdquisicion: new Date('2020-05-20'),
       observaciones: 'Buen estado',
-      libro: { connect: { id: libro1.id } }
+      libro: { connect: { id: libro1.id } },
+      estado: 'disponible'
     }
   })
 
@@ -81,7 +82,8 @@ async function main() {
       codigoEjemplar: 'EJ-1002',
       fechaAdquisicion: new Date('2021-08-10'),
       observaciones: 'Cubierta rayada',
-      libro: { connect: { id: libro1.id } }
+      libro: { connect: { id: libro1.id } },
+      estado: 'no disponible'
     }
   })
 

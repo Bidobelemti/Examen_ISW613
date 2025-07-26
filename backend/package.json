@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start" : "node src/index.js",
-    "dev" : "nodemon src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,13 @@
     "prisma": "^6.12.0"
   },
   "devDependencies": {
-    "nodemon": "^3.x"
+    "@types/node": "^24.1.0",
+    "nodemon": "^3.x",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
