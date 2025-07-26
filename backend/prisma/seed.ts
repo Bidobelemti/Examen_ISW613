@@ -73,7 +73,7 @@ async function main() {
     }
   })
 
-  // Crear o actualizar libros (usando upsert en base al ISBN que es único)
+  // Crear o actualizar libros (usando upsert en base al ISBN)
   const libro1 = await prisma.libro.upsert({
     where: { isbn: '978-3-16-148410-0' },
     update: {
@@ -179,20 +179,20 @@ async function main() {
     }
   })
 
-  // Crear o actualizar ejemplares (usando upsert en base al codigoEjemplar que es único)
+  // Crear o actualizar ejemplares (usando upsert en base a codigoEjemplar)
   const ejemplar1 = await prisma.ejemplar.upsert({
     where: { codigoEjemplar: 'EJ-1001' },
     update: {
       fechaAdquisicion: new Date('2020-05-20'),
       observaciones: 'Buen estado',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro1.id } }
     },
     create: {
       codigoEjemplar: 'EJ-1001',
       fechaAdquisicion: new Date('2020-05-20'),
       observaciones: 'Buen estado',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible',
       libro: { connect: { id: libro1.id } }
     }
   })
@@ -202,14 +202,14 @@ async function main() {
     update: {
       fechaAdquisicion: new Date('2021-08-10'),
       observaciones: 'Cubierta rayada',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro1.id } }
     },
     create: {
       codigoEjemplar: 'EJ-1002',
       fechaAdquisicion: new Date('2021-08-10'),
       observaciones: 'Cubierta rayada',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro1.id } }
     }
   })
@@ -219,14 +219,14 @@ async function main() {
     update: {
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro3.id } }
     },
     create: {
       codigoEjemplar: 'EJ-2001',
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible',
       libro: { connect: { id: libro3.id } }
     }
   })
@@ -236,14 +236,14 @@ async function main() {
     update: {
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro3.id } }
     },
     create: {
       codigoEjemplar: 'EJ-2002',
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible',
       libro: { connect: { id: libro3.id } }
     }
   })
@@ -253,28 +253,23 @@ async function main() {
     update: {
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible',
       libro: { connect: { id: libro3.id } }
     },
     create: {
       codigoEjemplar: 'EJ-2003',
       fechaAdquisicion: new Date('2023-01-12'),
       observaciones: 'Nuevo',
-      estado: 'disponible', // <--- ¡AÑADIDO Y CRUCIAL!
+      estado: 'disponible', 
       libro: { connect: { id: libro3.id } }
     }
   })
 
   // NOTA IMPORTANTE: Para Prestamo, Multa, Recomendacion, PrestamoHistorico y MultaHistorica,
-  // el uso de `create` generará nuevos registros cada vez que ejecutes el seed,
+  // el uso de `create` generará nuevos registros cada vez que se ejecute el seed,
   // ya que no tienen un campo `@unique` obvio para usar con `upsert` que garantice
   // que no se dupliquen si la base de datos no se borra.
-  // Si necesitas que estos también sean idempotentes, la lógica sería más compleja
-  // (ej. buscar si ya existe un préstamo con el mismo usuario/ejemplar y fecha, etc.).
-  // Para fines de seeding de datos de prueba, a menudo se acepta que estos se dupliquen
-  // o se borren manualmente si es necesario antes de un nuevo seed.
 
-  // Crear préstamo activo (se creará cada vez que se ejecute el seed si no se borra la DB)
   // Añadimos un .catch para que el seed no falle si el ejemplar ya está prestado.
   await prisma.prestamo.create({
     data: {
@@ -287,14 +282,13 @@ async function main() {
     console.warn(`Advertencia: No se pudo crear el préstamo activo para ejemplar ${ejemplar1.id}. Puede que ya exista o el ejemplar no esté disponible.`, e.message);
   });
 
-  // Crear multa activa (se creará cada vez que se ejecute el seed si no se borra la DB)
-  // Si la multa no tiene un campo `@unique` por el cual hacer upsert (como `prestamoId` si fuera 1-1),
-  // se creará una nueva cada vez.
+  // Crear multa activa (se creará cada vez que se ejecute el seed)
+  // Sin el campo `@unique` en multa, se creará una nueva cada vez.
   await prisma.multa.create({
     data: {
       fechaInicio: new Date(),
       dias: 4,
-      monto: 4.00, // Añadir un monto de ejemplo
+      monto: 4.00, 
       fechaFin: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
       usuario: { connect: { id: alumno.id } }
     }

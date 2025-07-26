@@ -2,7 +2,7 @@
 const prisma = require('../prisma/client');
 const { DIAS_PRESTAMO_POR_ROL, MAX_PRESTAMOS_POR_ROL, COSTO_MULTA_POR_DIA, DIAS_PENALIZACION_MULTA_FACTOR } = require('../utils/constants');
 
-const { EstadoUsuario } = require('@prisma/client'); // Importar el enum
+const { EstadoUsuario } = require('@prisma/client'); 
 
 const { getDaysDifference, addDays } = require('../utils/date.utils');
 
@@ -30,19 +30,18 @@ async function solicitarPrestamo(req, res) {
     if (!ejemplar) {
       return res.status(404).json({ message: 'Ejemplar no encontrado.' });
     }
-    if (ejemplar.estado !== 'disponible') { // Usamos el campo 'estado' añadido
+    if (ejemplar.estado !== 'disponible') { 
       return res.status(400).json({ message: `El ejemplar no está disponible para préstamo. Estado actual: ${ejemplar.estado}` });
     }
 
     // 3. Validar máximos de préstamos activos por usuario
-    // Contamos los registros en la tabla Prestamo, que representa préstamos activos.
     const prestamosActivos = await prisma.prestamo.count({
       where: {
         usuarioId: parseInt(usuarioId),
       }
     });
 
-    const maxPrestamos = MAX_PRESTAMOS_POR_ROL[usuario.tipo]; // Usamos 'tipo' de Usuario 
+    const maxPrestamos = MAX_PRESTAMOS_POR_ROL[usuario.tipo]; 
     if (maxPrestamos !== undefined && prestamosActivos >= maxPrestamos) {
       return res.status(400).json({ message: `El usuario ya tiene el máximo de ${maxPrestamos} préstamos activos permitidos.` });
     }
@@ -123,22 +122,22 @@ async function devolverEjemplar(req, res) {
         where: {
           usuarioId: prestamoActivo.usuarioId,
           fechaFin: {
-            gt: new Date() // La multa sigue activa
+            gt: new Date() 
           }
         }
       });
 
       if (multaExistente) {
-        // Si ya hay una multa activa, acumular días y recalcular fechaFin
+        
         const nuevosDiasAcumulados = multaExistente.dias + diasPenalizacionPorEstePrestamo;
         const nuevoMontoAcumulado = parseFloat(multaExistente.monto) + montoMultaCalculado; // Convertir a float para sumar
-        const nuevaFechaFin = addDays(new Date(), nuevosDiasAcumulados); // La penalización empieza a contar desde ahora 
+        const nuevaFechaFin = addDays(new Date(), nuevosDiasAcumulados); 
 
         multaGenerada = await prisma.multa.update({
           where: { id: multaExistente.id },
           data: {
             dias: nuevosDiasAcumulados,
-            monto: nuevoMontoAcumulado, // <-- ACTUALIZAR EL MONTO
+            monto: nuevoMontoAcumulado, 
             fechaFin: nuevaFechaFin,
           }
         });
@@ -246,7 +245,7 @@ async function getMisPrestamos(req, res) {
       orderBy: { fechaDevolucion: 'desc' }
     });
 
-    // Multa actual (si existe y está activa, es decir, fechaFin > ahora)
+    // Multa actual (si fechaFin > ahora)
     const multaActual = await prisma.multa.findFirst({
         where: {
             usuarioId: parseInt(usuarioId),

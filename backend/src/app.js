@@ -10,7 +10,7 @@ const app = express(); // Crea una instancia de la aplicación Express
 const PORT = process.env.PORT || 3000;
 
 // 3. Importar los módulos de rutas que has creado
-// Estos archivos contienen las definiciones de las rutas de tu API (ej. /api/prestamos, /api/multas)
+// Estos archivos contienen las definiciones de las rutas de tu API 
 const prestamosRoutes = require('./routes/prestamos.routes');
 const multasRoutes = require('./routes/multas.routes');
 
@@ -23,8 +23,8 @@ app.use(express.json());
 
 // 5. Definir las rutas base para tus módulos de rutas
 // app.use('/api/prestamos', prestamosRoutes);
-// Esto significa que cualquier ruta definida en prestamosRoutes (ej. router.post('/'))
-// será accesible bajo el prefijo '/api/prestamos' (ej. POST /api/prestamos)
+// Esto significa que cualquier ruta definida en prestamosRoutes 
+// será accesible bajo el prefijo '/api/prestamos' 
 app.use('/api/prestamos', prestamosRoutes);
 app.use('/api/multas', multasRoutes);
 

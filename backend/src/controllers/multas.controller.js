@@ -67,11 +67,11 @@ async function pagarMulta(req, res) {
         data: {
           usuarioId: multa.usuarioId,
           fechaInicio: multa.fechaInicio,
-          fechaFin: new Date(), // La fecha de fin es ahora, al pagar
+          fechaFin: new Date(), 
         }
       });
 
-      // Eliminar la multa activa (ya se movió a histórico)
+      // Eliminar la multa activa
       await tx.multa.delete({ // Usar tx para operaciones dentro de la transacción
         where: { id: parseInt(multaId) },
       });
@@ -85,8 +85,6 @@ async function pagarMulta(req, res) {
       });
 
       // Si no quedan más multas activas para el usuario, y si era MULTADO, volver a ACTIVO.
-      // Aquí podrías añadir lógica para verificar si también hay préstamos MOROSOS
-      // antes de cambiar el estado a ACTIVO, si eso es un requisito.
       if (otrasMultasActivas === 0 && multa.usuario.estado === EstadoUsuario.MULTADO) {
           await tx.usuario.update({ // Usar tx para operaciones dentro de la transacción
               where: { id: multa.usuarioId },
@@ -102,8 +100,8 @@ async function pagarMulta(req, res) {
     });
 
   } catch (error) {
-    console.error('Error al pagar multa:', error.message); // Usar error.message para errores lanzados
-    // Distinguir entre errores de validación (que lanzamos) y errores de servidor
+    console.error('Error al pagar multa:', error.message);
+    // Para distinguir entre errores de validación (que lanzamos) y errores de servidor
     if (error.message.includes('Multa no encontrada') || error.message.includes('finalizado')) {
         return res.status(400).json({ message: error.message }); // 400 para errores de negocio específicos
     }
