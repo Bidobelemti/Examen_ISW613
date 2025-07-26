@@ -1,0 +1,12 @@
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="postgresql://postgres.jecbphbpocqtmaaistlr:$3cr3tp445w0rd@aws-0-us-east-2.pooler.supabase.com:5432/postgres"
+
+KEYCLOAK_REALM="biblioteca"
+KEYCLOAK_AUTH_SERVER_URL="http://localhost:8080"
+KEYCLOAK_CLIENT_ID="biblioteca-app"
+KEYCLOAK_CLIENT_SECRET="AttIEK0nIA2KQYWXCsLfahyN1uVbSul2"
