@@ -4,8 +4,8 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  const multas = await prisma.multa.findMany();
-  console.log('Usuarios encontrados:', multas);
+  const ejemplares = await prisma.ejemplar.findMany();
+  console.log('Usuarios encontrados:', ejemplares);
 }
 
 main()
