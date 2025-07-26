@@ -103,6 +103,7 @@ async function main() {
       fechaInicio: new Date(),
       dias: 4,
       fechaFin: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+      monto : 2.0,
       usuario: { connect: { id: alumno.id } }
     }
   })
@@ -133,6 +134,7 @@ async function main() {
     data: {
       fechaInicio: new Date('2024-02-01'),
       fechaFin: new Date('2024-02-05'),
+      monto : 2.0,
       usuario: { connect: { id: profesor.id } }
     }
   })

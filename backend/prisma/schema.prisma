@@ -112,6 +112,7 @@ model Multa {
   fechaInicio DateTime
   dias        Int // Días acumulados
   fechaFin    DateTime
+  monto       Decimal  @default(0.00) @db.Decimal(10, 2)
 
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id])
@@ -123,6 +124,7 @@ model MultaHistorica {
   id          Int      @id @default(autoincrement())
   fechaInicio DateTime
   fechaFin    DateTime
+  monto       Decimal  @default(0.00) @db.Decimal(10, 2)
 
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id])
