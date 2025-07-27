@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 const { authenticateJWT, isUser, isAdmin } = require('./middleware/auth'); 
+const authRoutes = require('./routes/auth');
 
 dotenv.config(); 
 
@@ -10,6 +11,8 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json()); 
+
+app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('¡API de Biblioteca funcionando!');
