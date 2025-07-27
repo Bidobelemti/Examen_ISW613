@@ -9,11 +9,9 @@ generator client {
   binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
-
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // ¡Esta línea es la clave del éxito!
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum EstadoUsuario {
