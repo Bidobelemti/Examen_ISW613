@@ -7,14 +7,25 @@ export default function MyLoansPage() {
 
   useEffect(() => {
     // Simula un fetch desde el backend
-    setPrestamos(prestamosData);
+    const prestamosGuardados = JSON.parse(localStorage.getItem("misPrestamos")) || [];
+    setPrestamos(prestamosGuardados);
   }, []);
+
+  const handleDevolver = (idPrestamo) => {
+    const confirmacion = window.confirm("¿Estás seguro de devolver este libro?");
+    if (confirmacion) {
+      //setPrestamos((prev) => prev.filter((p) => p.id !== idPrestamo));
+       const nuevosPrestamos = prestamos.filter((p) => p.id !== idPrestamo);
+      setPrestamos(nuevosPrestamos);
+      localStorage.setItem("misPrestamos", JSON.stringify(nuevosPrestamos));
+    }
+  };
 
   return (
     <div style={{ padding: "2rem" }}>
       <h1>📚 Mis préstamos</h1>
       {prestamos.length > 0 ? (
-        <LoanTable prestamos={prestamos} />
+        <LoanTable prestamos={prestamos} onDevolver={handleDevolver} />
       ) : (
         <p>No tienes préstamos actualmente.</p>
       )}
