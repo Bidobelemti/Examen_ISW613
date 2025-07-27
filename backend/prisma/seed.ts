@@ -66,6 +66,42 @@ async function main() {
     }
   })
 
+  const libro3 = await prisma.libro.create({
+    data: {
+      isbn: '978-1-86197-876-9',
+      titulo: '1984',
+      autor: 'George Orwell',
+      numPaginas: 328,
+      numEjemplares: 3,
+      numEjemplaresDisponibles: 3,
+      portadaURL: 'https://example.com/portada3.jpg'
+    }
+  })
+
+  const libro4 = await prisma.libro.create({
+    data: {
+      isbn: '978-0-7432-7356-5',
+      titulo: 'El gran Gatsby',
+      autor: 'F. Scott Fitzgerald',
+      numPaginas: 180,
+      numEjemplares: 2,
+      numEjemplaresDisponibles: 2,
+      portadaURL: 'https://example.com/portada4.jpg'
+    }
+  })
+
+  const libro5 = await prisma.libro.create({
+    data: {
+      isbn: '978-0-451-52493-5',
+      titulo: 'Fahrenheit 451',
+      autor: 'Ray Bradbury',
+      numPaginas: 256,
+      numEjemplares: 4,
+      numEjemplaresDisponibles: 4,
+      portadaURL: 'https://example.com/portada5.jpg'
+    }
+  })
+
   // Crear ejemplares
   const ejemplar1 = await prisma.ejemplar.create({
     data: {
@@ -87,6 +123,33 @@ async function main() {
     }
   })
 
+  const ejemplar3 = await prisma.ejemplar.create({
+    data: {
+      codigoEjemplar: 'EJ-2001',
+      fechaAdquisicion: new Date('2023-01-12'),
+      observaciones: 'Nuevo',
+      libro: { connect: { id: libro3.id } }
+    }
+  })
+
+  const ejemplar4 = await prisma.ejemplar.create({
+    data: {
+      codigoEjemplar: 'EJ-2002',
+      fechaAdquisicion: new Date('2023-01-12'),
+      observaciones: 'Nuevo',
+      libro: { connect: { id: libro3.id } }
+    }
+  })
+
+  const ejemplar5 = await prisma.ejemplar.create({
+    data: {
+      codigoEjemplar: 'EJ-2003',
+      fechaAdquisicion: new Date('2023-01-12'),
+      observaciones: 'Nuevo',
+      libro: { connect: { id: libro3.id } }
+    }
+  })
+
   // Crear préstamo activo
   await prisma.prestamo.create({
     data: {
@@ -103,6 +166,7 @@ async function main() {
       fechaInicio: new Date(),
       dias: 4,
       fechaFin: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+      monto : 2.0,
       usuario: { connect: { id: alumno.id } }
     }
   })
@@ -133,6 +197,7 @@ async function main() {
     data: {
       fechaInicio: new Date('2024-02-01'),
       fechaFin: new Date('2024-02-05'),
+      monto : 2.0,
       usuario: { connect: { id: profesor.id } }
     }
   })
