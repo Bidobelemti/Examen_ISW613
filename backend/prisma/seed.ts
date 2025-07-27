@@ -326,6 +326,7 @@ async function main() {
     data: {
       fechaInicio: new Date('2024-02-01'),
       fechaFin: new Date('2024-02-05'),
+      monto: 2.0,
       usuario: { connect: { id: profesor.id } }
     }
   }).catch(e => {
