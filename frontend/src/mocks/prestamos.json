@@ -3,12 +3,12 @@
     "id": 1,
     "titulo": "Cien años de soledad",
     "fechaInicio": "2025-07-15",
-    "deberiaDevolverseEl": "2025-07-29"
+    "deberiaDevolverseEl": "2025-07-16"
   },
   {
     "id": 2,
     "titulo": "El Principito",
-    "fechaInicio": "2025-07-18",
-    "deberiaDevolverseEl": "2025-08-01"
+    "fechaInicio": "2025-07-15",
+    "deberiaDevolverseEl": "2025-07-16"
   }
 ]
