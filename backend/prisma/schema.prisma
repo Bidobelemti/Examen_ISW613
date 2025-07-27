@@ -71,7 +71,9 @@ model Ejemplar {
   codigoEjemplar   String   @unique
   fechaAdquisicion DateTime
   observaciones    String?
+
   estado           String   
+
   libroId Int
   libro   Libro @relation(fields: [libroId], references: [id])
 
@@ -124,7 +126,7 @@ model MultaHistorica {
   id          Int      @id @default(autoincrement())
   fechaInicio DateTime
   fechaFin    DateTime
-
+  monto       Decimal  @default(0.00) @db.Decimal(10, 2)
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id])
 }

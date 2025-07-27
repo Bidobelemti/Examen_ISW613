@@ -1,11 +1,10 @@
 require('dotenv').config();
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  const ejemplares = await prisma.ejemplar.findMany();
-  console.log('Usuarios encontrados:', ejemplares);
+  const usuarios = await prisma.usuario.findMany();
+  console.log('Usuarios encontrados:', usuarios);
 }
 
 main()
