@@ -1,13 +1,15 @@
-// src/pages/LoginPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 export default function LoginPage() {
-  const { isAuthenticated, login, user, isLoading } = useAuth();
+  const { isAuthenticated, login, user, isLoading, getUserId } = useAuth();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(null);
 
-  // Si ya está autenticado, redirigir a libros
   if (isAuthenticated) {
+    console.log("Usuario autenticado. ID del usuario:", getUserId());
     return <Navigate to="/libros" replace />;
   }
 
@@ -19,6 +21,18 @@ export default function LoginPage() {
     );
   }
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoginError(null);
+
+    try {
+      await login(username, password);
+    } catch (error) {
+      setLoginError(error.message || 'Error en el inicio de sesión. Inténtelo de nuevo.');
+      console.error('Error de autenticación:', error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.card}>
@@ -26,31 +40,47 @@ export default function LoginPage() {
         <p style={styles.description}>
           Accede a tu cuenta para gestionar tus préstamos de libros
         </p>
-        
-        <div style={styles.features}>
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>📚</span>
-            <span>Acceso a todos los libros</span>
-          </div>
-          
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>📋</span>
-            <span>Gestiona tus préstamos</span>
-          </div>
-          
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>🔒</span>
-            <span>Sesión segura con Keycloak</span>
-          </div>
-        </div>
 
-        <button onClick={login} style={styles.loginButton}>
-          Iniciar Sesión con Keycloak
-        </button>
+        {loginError && (
+          <div style={styles.errorMessage}>
+            {loginError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label htmlFor="username" style={styles.label}>Usuario:</label>
+            <input
+              type="text"
+              id="username"
+              style={styles.input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+          <div style={styles.inputGroup}>
+            <label htmlFor="password" style={styles.label}>Contraseña:</label>
+            <input
+              type="password"
+              id="password"
+              style={styles.input}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <button type="submit" style={styles.loginButton} disabled={isLoading}>
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+          </button>
+        </form>
 
         <div style={styles.info}>
           <p style={styles.infoText}>
-            💡 Serás redirigido a nuestro servidor de autenticación seguro
+            💡 Tus credenciales serán validadas de forma segura
           </p>
         </div>
       </div>
@@ -87,22 +117,27 @@ const styles = {
     fontSize: '1.1rem',
     lineHeight: '1.5',
   },
-  features: {
+  form: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    marginBottom: '2rem',
   },
-  feature: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.5rem',
-    backgroundColor: '#f8f9fa',
+  inputGroup: {
+    marginBottom: '1rem',
+    textAlign: 'left',
+  },
+  label: {
+    display: 'block',
+    marginBottom: '0.5rem',
+    color: '#34495e',
+    fontWeight: 'bold',
+  },
+  input: {
+    width: 'calc(100% - 20px)',
+    padding: '10px',
+    fontSize: '1rem',
     borderRadius: '6px',
-  },
-  featureIcon: {
-    fontSize: '1.2rem',
+    border: '1px solid #ccc',
   },
   loginButton: {
     backgroundColor: '#3498db',
@@ -116,6 +151,15 @@ const styles = {
     transition: 'background-color 0.3s',
     width: '100%',
     marginBottom: '1rem',
+    opacity: '0.9',
+  },
+  errorMessage: {
+    color: '#dc3545',
+    backgroundColor: '#f8d7da',
+    padding: '10px',
+    borderRadius: '5px',
+    marginBottom: '1.5rem',
+    border: '1px solid #f5c6cb',
   },
   info: {
     marginTop: '1.5rem',

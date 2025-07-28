@@ -1,10 +1,9 @@
-// src/controllers/multas.controller.js
+
 const prisma = require('../prisma/client');
 const { EstadoUsuario } = require('@prisma/client');
 
 async function getMultasPendientesUsuario(req, res) {
-  const { usuarioId } = req.query;
-
+  const { usuarioId } = req.body;
   if (!usuarioId) {
     return res.status(400).json({ message: 'ID de usuario es requerido.' });
   }
@@ -45,6 +44,7 @@ async function getMultasPendientesUsuario(req, res) {
 
 async function pagarMulta(req, res) {
   const { multaId } = req.params;
+  console.log(multaId)
 
   try {
     // Usar una transacción para garantizar que todas las operaciones se completen o ninguna lo haga

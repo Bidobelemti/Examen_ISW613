@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post('/', solicitarPrestamo);
 router.post('/devolver/:ejemplarId', devolverEjemplar);
-router.get('/mis-prestamos', getMisPrestamos);
+router.post('/mis-prestamos', getMisPrestamos);
 
 module.exports = router;

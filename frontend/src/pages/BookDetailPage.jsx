@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import librosData from "../mocks/libros.json";
+import axios from "axios";
 
 export default function BookDetailPage() {
   const { id } = useParams();
@@ -10,20 +10,47 @@ export default function BookDetailPage() {
   const [yaPrestado, setYaPrestado] = useState(false);
 
   useEffect(() => {
-    const found = librosData.find((l) => l.id === parseInt(id));
-    setLibro(found);
+    const fetchLibro = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/libros/${id}`);
+        setLibro(response.data);
+      } catch (error) {
+        console.error("Error al obtener el detalle del libro:", error);
+        setLibro(null);
+      }
+    };
 
-    const prestamosGuardados = JSON.parse(localStorage.getItem("misPrestamos")) || [];
-    setPrestamosActuales(prestamosGuardados);
+    fetchLibro();
 
-    const estaPrestado = prestamosGuardados.some(
-      (p) => p.titulo === found?.titulo
-    );
-    setYaPrestado(estaPrestado);
+    const storedPrestamos = localStorage.getItem("misPrestamos");
+    let initialPrestamos = [];
+
+    if (storedPrestamos) {
+      try {
+        const parsedPrestamos = JSON.parse(storedPrestamos);
+        if (Array.isArray(parsedPrestamos)) {
+          initialPrestamos = parsedPrestamos;
+        } else {
+          console.warn("Préstamos en localStorage no son válidos, inicializando vacío.");
+        }
+      } catch (e) {
+        console.error("Error al parsear localStorage:", e);
+        initialPrestamos = [];
+      }
+    }
+
+    setPrestamosActuales(initialPrestamos);
   }, [id]);
 
+  useEffect(() => {
+    if (libro && prestamosActuales.length > 0) {
+      const estaPrestado = prestamosActuales.some(p => p.titulo === libro.titulo);
+      setYaPrestado(estaPrestado);
+    }
+  }, [libro, prestamosActuales]);
+
   if (!libro) {
-    return <h2>Libro no encontrado</h2>;
+    return <h2>📕 Libro no encontrado</h2>;
   }
 
   const handlePedirPrestamo = () => {
@@ -34,7 +61,10 @@ export default function BookDetailPage() {
       deberiaDevolverseEl: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
     };
 
-    const nuevosPrestamos = [...prestamosActuales, nuevoPrestamo];
+    const nuevosPrestamos = Array.isArray(prestamosActuales)
+      ? [...prestamosActuales, nuevoPrestamo]
+      : [nuevoPrestamo];
+
     localStorage.setItem("misPrestamos", JSON.stringify(nuevosPrestamos));
     setPrestamosActuales(nuevosPrestamos);
     setYaPrestado(true);

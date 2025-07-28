@@ -95,6 +95,7 @@ const isUser = (req, res, next) => {
 
 // Middleware por rol: isAdmin
 const isAdmin = (req, res, next) => {
+  
   const userRoles = getUserRoles(req.user);
 
   if (userRoles.length === 0) {

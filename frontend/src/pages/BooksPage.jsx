@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BookCard from "../components/BookCard";
-import librosData from "../mocks/libros.json";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function BooksPage() {
@@ -8,8 +8,16 @@ export default function BooksPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulamos fetch
-    setLibros(librosData);
+    const fetchLibros = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/api/libros");
+        setLibros(response.data);
+      } catch (error) {
+        console.error("Error al obtener libros:", error);
+      }
+    };
+
+    fetchLibros();
   }, []);
 
   const verMas = (id) => {

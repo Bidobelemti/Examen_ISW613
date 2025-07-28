@@ -1,6 +1,5 @@
-// backend/src/routes/auth.js
 const express = require('express');
-const router = express.Router(); // Usamos express.Router para definir sub-rutas
+const router = express.Router();
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client'); // Necesario para interactuar con la DB

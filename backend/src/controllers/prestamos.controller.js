@@ -59,6 +59,7 @@ async function solicitarPrestamo(req, res) {
         deberiaDevolverseEl: deberiaDevolverseEl,
       },
     });
+    console.log(nuevoPrestamo);
 
     // 6. Actualizar el estado del ejemplar a "prestado"
     await prisma.ejemplar.update({
@@ -211,7 +212,7 @@ async function devolverEjemplar(req, res) {
 }
 
 async function getMisPrestamos(req, res) {
-  const { usuarioId } = req.query;
+  const { usuarioId } = req.body;
 
   if (!usuarioId) {
     return res.status(400).json({ message: 'ID de usuario es requerido.' });

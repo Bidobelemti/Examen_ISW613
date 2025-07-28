@@ -1,31 +1,38 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { isAuthenticated, user, login, logout, isLoading } = useAuth();
+  const { isAuthenticated, user, logout, isLoading } = useAuth(); // Ya no necesitas 'login' aquí
+  const navigate = useNavigate(); // <--- Inicializa useNavigate
+
+  const handleLoginRedirect = () => {
+    navigate('/login');
+  };
+
   return (
     <nav style={styles.nav}>
       <h2 style={styles.logo}>📘 Biblioteca</h2>
-      
+
       <ul style={styles.links}>
         <li><Link to="/libros" style={styles.link}>Libros</Link></li>
-        
+
         {isAuthenticated && (
           <li><Link to="/mis-prestamos" style={styles.link}>Mis préstamos</Link></li>
         )}
-        
+
         {!isLoading && (
           <li style={styles.authSection}>
             {isAuthenticated ? (
               <div style={styles.userSection}>
-                <span style={styles.userName}>👤 {user?.name || 'Usuario'}</span>
+                {/* Asegúrate de que user?.nombre exista o usa un fallback como user?.login */}
+                <span style={styles.userName}>👤 {user?.nombre || user?.login || 'Usuario'}</span>
                 <button onClick={logout} style={styles.authButton}>
                   Cerrar Sesión
                 </button>
               </div>
             ) : (
-              <button onClick={login} style={styles.authButton}>
+              <button onClick={handleLoginRedirect} style={styles.authButton}>
                 Iniciar Sesión
               </button>
             )}
