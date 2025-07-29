@@ -1,77 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Para obtener el usuario
 
 export default function BookDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [libro, setLibro] = useState(null);
-  const [prestamosActuales, setPrestamosActuales] = useState([]);
   const [yaPrestado, setYaPrestado] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { getUserId } = useAuth();
 
   useEffect(() => {
-    const fetchLibro = async () => {
+    const fetchLibroYPrestamo = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/libros/${id}`);
-        setLibro(response.data);
+        // 1. Obtener datos del libro
+        const libroResp = await axios.get(`http://localhost:3001/api/libros/${id}`);
+        setLibro(libroResp.data);
+
+        // 2. Consultar si el usuario tiene préstamo activo de este libro
+        const prestamosResp = await axios.post("http://localhost:3001/api/prestamos/mis-prestamos", {
+          usuarioId: getUserId()
+        });
+
+        const prestamosActivos = prestamosResp.data.prestamosActivos;
+
+        // Verificar si alguno de los ejemplares prestados pertenece a este libro
+        const prestado = prestamosActivos.some(
+          (p) => p.ejemplar.libroId === parseInt(id)
+        );
+        setYaPrestado(prestado);
+
       } catch (error) {
-        console.error("Error al obtener el detalle del libro:", error);
+        console.error("Error al cargar detalle del libro o préstamos:", error);
         setLibro(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchLibro();
+    fetchLibroYPrestamo();
+  }, [id, getUserId]);
 
-    const storedPrestamos = localStorage.getItem("misPrestamos");
-    let initialPrestamos = [];
+  const handlePedirPrestamo = async () => {
+    try {
+      // Buscar un ejemplar disponible del libro
+      const ejemplaresDisponiblesResp = await axios.get(`http://localhost:3001/api/prestamos/${id}/ejemplares-disponibles`);
+      const ejemplares = ejemplaresDisponiblesResp.data;
 
-    if (storedPrestamos) {
-      try {
-        const parsedPrestamos = JSON.parse(storedPrestamos);
-        if (Array.isArray(parsedPrestamos)) {
-          initialPrestamos = parsedPrestamos;
-        } else {
-          console.warn("Préstamos en localStorage no son válidos, inicializando vacío.");
-        }
-      } catch (e) {
-        console.error("Error al parsear localStorage:", e);
-        initialPrestamos = [];
+      if (!ejemplares.length) {
+        alert("No hay ejemplares disponibles actualmente.");
+        return;
       }
+
+      const ejemplarDisponible = ejemplares[0];
+
+      await axios.post("http://localhost:3001/api/prestamos", {
+        usuarioId: getUserId(),
+        ejemplarId: ejemplarDisponible.id,
+      });
+
+      alert("📚 Préstamo realizado correctamente.");
+      navigate("/mis-prestamos");
+
+    } catch (error) {
+      console.error("Error al solicitar préstamo:", error);
+      alert("No se pudo completar el préstamo.");
     }
-
-    setPrestamosActuales(initialPrestamos);
-  }, [id]);
-
-  useEffect(() => {
-    if (libro && prestamosActuales.length > 0) {
-      const estaPrestado = prestamosActuales.some(p => p.titulo === libro.titulo);
-      setYaPrestado(estaPrestado);
-    }
-  }, [libro, prestamosActuales]);
-
-  if (!libro) {
-    return <h2>📕 Libro no encontrado</h2>;
-  }
-
-  const handlePedirPrestamo = () => {
-    const nuevoPrestamo = {
-      id: Date.now(),
-      titulo: libro.titulo,
-      fechaInicio: new Date().toISOString().split("T")[0],
-      deberiaDevolverseEl: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    };
-
-    const nuevosPrestamos = Array.isArray(prestamosActuales)
-      ? [...prestamosActuales, nuevoPrestamo]
-      : [nuevoPrestamo];
-
-    localStorage.setItem("misPrestamos", JSON.stringify(nuevosPrestamos));
-    setPrestamosActuales(nuevosPrestamos);
-    setYaPrestado(true);
-
-    alert("📥 Libro prestado correctamente");
-    navigate("/mis-prestamos");
   };
+
+  if (loading) return <p>Cargando libro...</p>;
+
+  if (!libro) return <h2>📕 Libro no encontrado</h2>;
 
   return (
     <div style={{ padding: "2rem" }}>
@@ -84,8 +84,13 @@ export default function BookDetailPage() {
       <p><strong>Autor:</strong> {libro.autor}</p>
       <p><strong>Páginas:</strong> {libro.numPaginas}</p>
       <p><strong>Ejemplares disponibles:</strong> {libro.numEjemplaresDisponibles}</p>
-      <button onClick={handlePedirPrestamo} disabled={yaPrestado}>
-        {yaPrestado ? "✔️ Ya prestado" : "📚 Pedir préstamo"}
+
+      <button onClick={handlePedirPrestamo} disabled={yaPrestado || libro.numEjemplaresDisponibles <= 0}>
+        {yaPrestado
+          ? "✔️ Ya tienes un ejemplar prestado"
+          : libro.numEjemplaresDisponibles > 0
+          ? "📚 Pedir préstamo"
+          : "❌ Sin disponibilidad"}
       </button>
     </div>
   );
