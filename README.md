@@ -8,16 +8,7 @@ Inicialización de proyecto
 ```bash
 cd backend
 npm init -y
-
-```
-
-```bash
-
 npm install express prisma @prisma/client dotenv
-```
-
-```bash
-
 npx prisma init --datasource-provider postgresql
 
 ```
